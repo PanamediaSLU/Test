@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Draw;
 use Doctrine\ORM\EntityManagerInterface;
 
-class DrawDbRepository  implements DrawDbRepositoryInterface
+class DrawDbRepository implements DrawDbRepositoryInterface
 {
     private $entityManager;
 
@@ -17,16 +17,17 @@ class DrawDbRepository  implements DrawDbRepositoryInterface
     /**
      * @return array
      */
-    public function findAll(): array
+    public function getAll(): array
     {
-        return $this->findAll();
+        return [$this->entityManager->find(Draw::class, 1)];
     }
 
     /**
      * @param Draw $draw
      */
-    public function save(Draw $test): void
+    public function save(Draw $draw): void
     {
-        $this->save($draw);
+        $this->entityManager->persist($draw);
+        $this->entityManager->flush();
     }
 }

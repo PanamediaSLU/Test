@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(
  *     name="euromillions_draws",
- *     uniqueConstraints={@ORM\UniqueConstraint(name="renditions_unique_name", columns={"draw_date"})}
+ *     uniqueConstraints={@ORM\UniqueConstraint(name="draw_date_unique_name", columns={"draw_date"})}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\DrawDbRepository")
  */

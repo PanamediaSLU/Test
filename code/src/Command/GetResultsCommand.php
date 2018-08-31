@@ -29,6 +29,7 @@ class GetResultsCommand extends Command
     {
         try {
             $draw = $this->getDrawUseCase->execute();
+
             $drawDataArray = $draw->toArray();
 
             foreach ($drawDataArray as $key => $val) {

@@ -9,7 +9,7 @@ interface DrawDbRepositoryInterface
     /**
      * @return array
      */
-    public function findAll(): array;
+    public function getAll(): array;
 
     /**
      * @param Draw $draw

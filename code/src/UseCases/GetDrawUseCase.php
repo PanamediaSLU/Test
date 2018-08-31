@@ -3,45 +3,47 @@
 namespace App\UseCases;
 
 use App\Entity\Draw;
+use App\Exceptions\CouldNotSaveDrawException;
+use App\Exceptions\NotFoundException;
 use App\Repository\DrawApiRepositoryInterface;
 use App\Repository\DrawDbRepositoryInterface;
 
 class GetDrawUseCase
 {
-    private $testApiRepository;
-    private $testFallbackApiRepository;
+    private $drawApiRepository;
+    private $drawFallbackApiRepository;
 
     public function __construct(
-        DrawApiRepositoryInterface $testApiRepository,
-        DrawApiRepositoryInterface $testFallbackApiRepository,
-        DrawDbRepositoryInterface $testDbRepository
+        DrawApiRepositoryInterface $drawApiRepository,
+        DrawApiRepositoryInterface $drawFallbackApiRepository,
+        DrawDbRepositoryInterface $drawDbRepository
     ) {
-        $this->testApiRepository = $testApiRepository;
-        $this->testFallbackApiRepository = $testFallbackApiRepository;
-        $this->testDbRepository = $testDbRepository;
+        $this->drawApiRepository = $drawApiRepository;
+        $this->drawFallbackApiRepository = $drawFallbackApiRepository;
+        $this->drawDbRepository = $drawDbRepository;
     }
 
     /**
-     * @param array $renditionData
      * @return Draw
-     * @throws DatabaseException
-     * @throws InvalidInputException
+     * @throws NotFoundException
      */
     public function execute(): Draw
     {
 
+        var_dump($this->drawDbRepository->getAll());die;
         try {
-            $test = $this->testApiRepository->findOneBy(['game' => 'euromillions']);
+            $draw = $this->drawApiRepository->findOneBy(['game' => 'euromillions']);
         } catch (\Exception $exception) {
             try {
-                $test = $this->testFallbackApiRepository->findOneBy(['game' => 'euromillions']);
+                $draw = $this->drawFallbackApiRepository->findOneBy(['game' => 'euromillions']);
+
             } catch (\Exception $exception) {
-                throw new \RuntimeException('Could not retreive data. '.$exception->getMessage());
+                throw new NotFoundException('Could not retreive draw data. ' . $exception->getMessage());
             }
         }
 
-       // $this->testDbRepository->save($test);
+        $this->drawDbRepository->save($draw);
 
-        return $test;
+        return $draw;
     }
 }
