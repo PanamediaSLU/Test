@@ -3,8 +3,7 @@
 namespace App\Tests\unit\UseCases;
 
 use App\Entity\Draw;
-use App\Repository\DrawApiRepositoryInterface;
-use App\Repository\DrawDbRepositoryInterface;
+use App\Exceptions\NotFoundException;
 use App\UseCases\GetDrawUseCase;
 use PHPUnit\Framework\TestCase;
 
@@ -19,33 +18,21 @@ class GetDrawUseCaseTest extends TestCase
     /** @var DrawApiRepositoryInterface */
     private $testFallbackApiRepositoryMock;
 
-    /** @var DrawDbRepositoryInterface */
-    private $testDbRepositoryMock;
 
     protected function setup()
     {
         $this->testApiRepositoryMock =  $this->prophesize(\App\Repository\DrawApiRepository::class);
-        $this->testFallbackApiRepositoryMock =  $this->prophesize(\App\Repository\DrawFallbackApiRepository::class);
-        $this->testDbRepositoryMock =  $this->prophesize(\App\Repository\DrawDbRepository::class);
 
         $this->useCase = new GetDrawUseCase(
-            $this->testApiRepositoryMock->reveal(),
-            $this->testFallbackApiRepositoryMock->reveal(),
-            $this->testDbRepositoryMock->reveal());
+            $this->testApiRepositoryMock->reveal());
     }
 
     public function testUseCaseReturnsValidResponseWhenApiWorks()
     {
-
         $this->testApiRepositoryMock
-            ->findOneBy(['game' => 'euromillions'])
+            ->fetch()
             ->shouldBeCalledTimes(1)
             ->willReturn($this->getDrawInstance());
-
-        $this->testFallbackApiRepositoryMock
-            ->findOneBy(['game' => 'euromillions'])
-            ->shouldBeCalledTimes(0);
-
 
         $result = $this->useCase->execute();
         $this->assertInstanceOf(Draw::class, $result);
@@ -53,26 +40,20 @@ class GetDrawUseCaseTest extends TestCase
 
     public function testUseCaseReturnsObjectWhenApiFails()
     {
+        $this->expectException(NotFoundException::class);
 
         $this->testApiRepositoryMock
-            ->findOneBy(['game' => 'euromillions'])
+            ->fetch()
             ->shouldBeCalledTimes(1)
             ->willReturn($this->getDrawInstance())
             ->willThrow(new \Exception());;
 
-        $this->testFallbackApiRepositoryMock
-            ->findOneBy(['game' => 'euromillions'])
-            ->shouldBeCalledTimes(1);
-
-
-        $result = $this->useCase->execute();
-        $this->assertInstanceOf(Draw::class, $result);
+        $this->useCase->execute();
     }
 
     private function getDrawInstance()
     {
         return new Draw(1,
-            1,
             "01/01/2018",
             1,
             2,

@@ -3,24 +3,20 @@
 namespace App\Repository;
 
 use App\Entity\Draw;
-use App\Exceptions\NotFoundException;
+use App\Interfaces\IResultApi;
 
-class DrawFallbackApiRepository implements DrawApiRepositoryInterface
+class DrawFallbackApiRepository implements IResultApi
 {
     public function __construct()
     {
     }
 
     /**
-     * @param array $criteria
-     * @param array $orderBy
      * @return Draw
      */
-    public function findOneBy(array $criteria, array $orderBy = []): Draw
+    public function fetch(): Draw
     {
-        if (isset($criteria['game']) && $criteria['game'] == 'euromillions')
-            return new Draw(1,
-            1,
+        return new Draw(1,
             "01/01/2018",
             1,
             2,
@@ -33,6 +29,5 @@ class DrawFallbackApiRepository implements DrawApiRepositoryInterface
             9);
     }
 }
-
 
 

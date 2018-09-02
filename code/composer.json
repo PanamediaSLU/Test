@@ -22,7 +22,8 @@
         "symfony/validator": "*",
         "symfony/web-link": "*",
         "symfony/yaml": "*",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "predis/predis": "*"
     },
     "require-dev": {
         "symfony/debug-pack": "*",

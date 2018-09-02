@@ -4,7 +4,6 @@ namespace App\Adapters;
 
 use App\Exceptions\ApiErrorException;
 use App\Interfaces\IApiClient;
-use App\Interfaces\IResultApi;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
@@ -31,10 +30,10 @@ class GuzzleHttpClientAdapter implements IApiClient
      * @param $method
      * @param string $uri
      * @param array $options
-     * @return ApiResultAdapter
+     * @return array
      * @throws ApiErrorException
      */
-    public function request($method, $uri = '', array $options = []): IResultApi
+    public function request($method, $uri = '', array $options = []): array
     {
         try {
             $response =  $this->apiClient->request($method, $uri, $options);
@@ -47,6 +46,6 @@ class GuzzleHttpClientAdapter implements IApiClient
             throw new ApiErrorException('Bad status code', ['status_code' => $statusCode]);
         }
 
-        return new ApiResultAdapter($response);
+        return json_decode($response->getBody()->getContents(), true);
     }
 }

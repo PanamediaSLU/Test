@@ -9,6 +9,10 @@ parameters:
        api_url: 'https://www.magayo.com/api/results.php'
        api_key: 'mASBxwC2sUzjyTNRpS'
 
+    redis_config:
+        host: redis
+        port: 6379
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -30,14 +34,23 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    #App\Repository\:
+     #   resource: '../src/Repository'
+      #  autowire: true
+       # tags: ['doctrine.repository_service']
+
+
+    api_repository:
+        class: App\Repository\DrawApiRepository
+        autowire: true
+        tags: ['doctrine.repository_service']
+        arguments:
+          $drawFallbackApiRepository: '@api_repository_fallback'
+
     App\Interfaces\IApiClient:
         class: App\Adapters\GuzzleHttpClientAdapter
         arguments:
             $config: '%api_repository_config%'
-
-    api_repository:
-        class: App\Repository\DrawApiRepository
-        public: true
 
     api_repository_fallback:
         class: App\Repository\DrawFallbackApiRepository
@@ -51,5 +64,11 @@ services:
         class: App\UseCases\GetDrawUseCase
         arguments:
             $drawApiRepository: '@api_repository'
-            $drawFallbackApiRepository: '@api_repository_fallback'
-            $drawDbRepository: '@App\Repository\DrawDbRepositoryInterface'
+
+
+    App\Interfaces\ICache: '@App\Adapters\RedisCacheAdapter'
+
+    App\Adapters\RedisCacheAdapter:
+        class: App\Adapters\RedisCacheAdapter
+        arguments:
+          $config: '%redis_config%'

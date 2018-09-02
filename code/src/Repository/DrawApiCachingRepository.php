@@ -4,33 +4,34 @@ namespace App\Repository;
 
 use App\Entity\Draw;
 use App\Interfaces\ICache;
+use App\Interfaces\IResultApi;
 
-class DrawApiCachingRepository implements DrawApiRepositoryInterface
+class DrawApiCachingRepository implements IResultApi
 {
-    private $testApiRepository;
+    private $drawApiRepository;
     private $cacheAdapter;
 
-    public function __construct(DrawApiRepositoryInterface $testApiRepository, ICache $cacheAdapter)
+    public function __construct(
+        IResultApi $drawApiRepository,
+        ICache $cacheAdapter
+    )
     {
-        $this->testApiRepository = $testApiRepository;
+        $this->drawApiRepository = $drawApiRepository;
         $this->cacheAdapter = $cacheAdapter;
     }
 
     /**
-     * @param array $criteria
-     * @param array $orderBy
      * @return Draw
-     * @throws \App\Exceptions\NotFoundException
      */
-    public function findOneBy(array $criteria, array $orderBy = []): Draw
+    public function fetch(): Draw
     {
-        $cacheKey = 'find_by_' . implode("_", $criteria);
+        $cacheKey = 'fetch_one';
 
         if ($test = $this->cacheAdapter->get($cacheKey)) {
             return json_decode($test);
         }
 
-        $result = $this->testApiRepository->findOneBy($criteria, $orderBy);
+        $result = $this->drawApiRepository->fetch();
 
         $this->cacheAdapter->put($cacheKey, json_encode($result));
 

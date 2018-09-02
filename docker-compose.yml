@@ -34,7 +34,7 @@ services:
     networks:
       - local
     volumes:
-      - ./src/:/var/www/Test/src
+      - ./code/:/var/www/
 
 networks:
   local:

@@ -35,9 +35,10 @@ class GetResultsCommand extends Command
             foreach ($drawDataArray as $key => $val) {
                 $output->writeln($key . ": " . $val);
             }
-
+            return 0;
         } catch (\Exception $exception) {
             $output->write($exception->getMessage());
+            return 1;
         }
     }
 }

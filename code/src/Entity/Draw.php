@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @ORM\Table(
@@ -23,7 +24,7 @@ class Draw
 
     /**
      * @var int
-     * @ORM\Column(name="lottery_id", type="int", length=128, nullable=true)
+     * @ORM\Column(name="lottery_id", type="integer", length=128, nullable=true)
      */
     private $lotteryId;
 
@@ -89,7 +90,6 @@ class Draw
 
     /**
      * Test constructor.
-     * @param int $id
      * @param int $lotteryId
      * @param string $drawDate
      * @param int $resultRegularNumberOne
@@ -103,7 +103,6 @@ class Draw
      * @param int $jackpotCurrencyName
      */
     public function __construct(
-        $id,
         $lotteryId,
         $drawDate,
         $resultRegularNumberOne,
@@ -116,9 +115,8 @@ class Draw
         $jackpoAmount,
         $jackpotCurrencyName
     ) {
-        $this->id = $id;
         $this->lotteryId = $lotteryId;
-        $this->drawDate = $drawDate;
+        $this->drawDate = new \DateTime($drawDate);
         $this->resultRegularNumberOne = $resultRegularNumberOne;
         $this->resultRegularNumberTwo = $resultRegularNumberTwo;
         $this->resultRegularNumberThree = $resultRegularNumberThree;
@@ -149,7 +147,7 @@ class Draw
     /**
      * @return string
      */
-    public function getDrawDate()
+    public function getDrawDate(): \DateTime
     {
         return $this->drawDate;
     }
@@ -229,8 +227,7 @@ class Draw
     public function toArray()
     {
         return [
-            'id' => $this->getId(),
-            'drawdate' => $this->drawDate,
+            'drawdate' => $this->drawDate->format("Y-m-a H:i:s"),
             'regular_number_one' => $this->getResultRegularNumberOne(),
             'regular_number_two' => $this->getResultRegularNumberTwo(),
             'regular_number_three' => $this->getResultRegularNumberThree(),
