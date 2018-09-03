@@ -10,8 +10,6 @@ doctrine:
                 port:             3306
                 driver:           pdo_mysql
                 server_version:   5.6 # your database server version here
-
-                url: '%env(resolve:DATABASE_URL)%'
     orm:
         metadata_cache_driver:
             type: service

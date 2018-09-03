@@ -18,7 +18,8 @@ doctrine:
                 driver:           pdo_mysql
                 server_version:   5.6 # your database server version here
 
-                url: '%env(resolve:DATABASE_URL)%'
+                # Overwrites the previous variables (DATABASE_URL must be set on .env)
+                # url: '%env(resolve:DATABASE_URL)%'
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore
