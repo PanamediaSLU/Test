@@ -13,6 +13,9 @@ class GuzzleHttpClientAdapter implements IApiClient
     /** @var ClientInterface  */
     private $apiClient;
 
+    /** @var string */
+    private $apiKey;
+
     public function __construct(array $config)
     {
         $this->apiClient = new Client(
@@ -20,10 +23,11 @@ class GuzzleHttpClientAdapter implements IApiClient
                 'base_uri' => $config['api_url'],
                 'headers' => [
                     'Content-Type' => 'application/json',
-                ],
-                'auth' => $config['api_key']
+                ]
             ]
         );
+
+        $this->apiKey = $config['api_key'];
     }
 
     /**
@@ -35,6 +39,12 @@ class GuzzleHttpClientAdapter implements IApiClient
      */
     public function request($method, $uri = '', array $options = []): array
     {
+        if(!isset($options['query']) || !is_array($options['query'])){
+            $options['query'] = [];
+        }
+
+        $options['query'] = array_merge($options['query'], ["api_key" => $this->apiKey]);
+
         try {
             $response =  $this->apiClient->request($method, $uri, $options);
         } catch (GuzzleException $exception) {

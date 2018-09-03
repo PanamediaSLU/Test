@@ -43,12 +43,11 @@ class DrawApiRepository implements IResultApi
                 ['query' => ['game' => 'euromillions']]
             );
 
-            if (isset($data['error']) || !is_array($data['results'])) {
+            if (isset($data['error']) && (0 < (int)$data['error'])) {
                 throw new ApiErrorException("Api returned an error");
             }
 
             $draw = $this->createDrawInstance($data);
-
         } catch (ApiErrorException $e) {
             try {
                 $draw = $this->drawFallbackApiRepository->fetch();
@@ -56,7 +55,7 @@ class DrawApiRepository implements IResultApi
                 throw new NotFoundException("Could not retrieve results from api.");
             }
         } catch (\Exception $e) {
-            throw new NotFoundException("Could not retrieve results from api.");
+            throw new NotFoundException("Could not create instance from api response.");
         }
 
         $this->drawDbRepository->save($draw);

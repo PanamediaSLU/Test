@@ -20,7 +20,7 @@ class GetDrawUseCaseTest extends KernelTestCase
     private $useCase;
 
     /** @var IResultApi */
-    private $drawRepository;
+    private $drawDbRepository;
 
     /** @var ICache */
     private $cacheAdapter;
@@ -37,29 +37,21 @@ class GetDrawUseCaseTest extends KernelTestCase
             ->getManager();
 
         $this->useCase = $kernel->getContainer()->get(GetDrawUseCase::class);
-        $this->drawRepository = $this->entityManager->getRepository(Draw::class);
+        $this->drawDbRepository = $this->entityManager->getRepository(Draw::class);
         $this->cacheAdapter = $kernel->getContainer()->get(RedisCacheAdapter::class);
 
         $this->resetDbAndCache();
     }
 
-    public function testApiResultIsReturnedAndSavedToDbOnFirstCall()
+    public function testApiResultIsReturnedAndSavedToDb()
     {
-        $allItems = $this->drawRepository->findAll();
+        $this->resetDbAndCache();
+        $allItems = $this->drawDbRepository->findAll();
         $draw = $this->useCase->execute();
-        $allItemsAfterUseCase = $this->drawRepository->findAll();
+        $allItemsAfterUseCase = $this->drawDbRepository->findAll();
         $this->assertInstanceOf(Draw::class, $draw);
         $this->assertSame(count($allItems) + 1, count($allItemsAfterUseCase),
             'Amount of security systems is not the same');
-    }
-
-    public function testApiResultIsReturnedOnSubsequentCalls()
-    {
-        $draw = $this->useCase->execute();
-        $this->assertInstanceOf(Draw::class, $draw);
-
-        $draw = $this->useCase->execute();
-        $this->assertInstanceOf(Draw::class, $draw);
     }
 
     /**
@@ -75,7 +67,7 @@ class GetDrawUseCaseTest extends KernelTestCase
 
     private function resetDbAndCache()
     {
-        $qb = $this->drawRepository->createQueryBuilder("qb");
+        $qb = $this->drawDbRepository->createQueryBuilder("qb");
 
         $qb->delete(Draw::class, 'io');
         $qb->where('io.id >= :id');
