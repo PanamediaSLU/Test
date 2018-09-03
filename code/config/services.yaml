@@ -34,11 +34,10 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    #App\Repository\:
-     #   resource: '../src/Repository'
-      #  autowire: true
-       # tags: ['doctrine.repository_service']
-
+    # App\Repository\:
+    #   resource: '../src/Repository'
+    #   autowire: true
+    #   tags: ['doctrine.repository_service']
 
     api_repository:
         class: App\Repository\DrawApiRepository
@@ -47,28 +46,34 @@ services:
         arguments:
           $drawFallbackApiRepository: '@api_repository_fallback'
 
-    App\Interfaces\IApiClient:
-        class: App\Adapters\GuzzleHttpClientAdapter
+    api_caching_repository:
+        class: App\Repository\DrawApiCachingRepository
+        autowire: true
         arguments:
-            $config: '%api_repository_config%'
-
-    api_repository_fallback:
-        class: App\Repository\DrawFallbackApiRepository
-        public: true
-
-    App\Adapters\GuzzleHttpResponseAdapter:
-        class: App\Adapters\GuzzleHttpResponseAdapter
+          $drawApiRepository: '@api_repository'
 
     App\UseCases\GetDrawUseCase:
         public: true
         class: App\UseCases\GetDrawUseCase
         arguments:
-            $drawApiRepository: '@api_repository'
+            $drawApiRepository: '@api_caching_repository'
 
+    api_repository_fallback:
+        class: App\Repository\DrawFallbackApiRepository
+        public: true
+
+    App\Interfaces\IApiClient:
+        class: App\Adapters\GuzzleHttpClientAdapter
+        arguments:
+            $config: '%api_repository_config%'
+
+    App\Adapters\GuzzleHttpResponseAdapter:
+        class: App\Adapters\GuzzleHttpResponseAdapter
 
     App\Interfaces\ICache: '@App\Adapters\RedisCacheAdapter'
 
     App\Adapters\RedisCacheAdapter:
         class: App\Adapters\RedisCacheAdapter
+        public: true
         arguments:
           $config: '%redis_config%'

@@ -8,16 +8,24 @@ use App\Interfaces\IResultApi;
 
 class DrawApiCachingRepository implements IResultApi
 {
+    /** @var IResultApi */
     private $drawApiRepository;
+
+    /** @var ICache */
     private $cacheAdapter;
+
+    /** @var DrawDbRepositoryInterface */
+    private $drawDbRepository;
 
     public function __construct(
         IResultApi $drawApiRepository,
-        ICache $cacheAdapter
+        ICache $cacheAdapter,
+        DrawDbRepositoryInterface $drawDbRepository
     )
     {
         $this->drawApiRepository = $drawApiRepository;
         $this->cacheAdapter = $cacheAdapter;
+        $this->drawDbRepository = $drawDbRepository;
     }
 
     /**
@@ -27,13 +35,14 @@ class DrawApiCachingRepository implements IResultApi
     {
         $cacheKey = 'fetch_one';
 
-        if ($test = $this->cacheAdapter->get($cacheKey)) {
-            return json_decode($test);
+        if ($draw = $this->cacheAdapter->get($cacheKey)) {
+            $this->drawDbRepository->save($draw);
+
+            return $draw;
         }
 
         $result = $this->drawApiRepository->fetch();
-
-        $this->cacheAdapter->put($cacheKey, json_encode($result));
+        $this->cacheAdapter->put($cacheKey, $result);
 
         return $result;
     }

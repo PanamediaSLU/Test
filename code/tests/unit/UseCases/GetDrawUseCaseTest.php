@@ -4,6 +4,7 @@ namespace App\Tests\unit\UseCases;
 
 use App\Entity\Draw;
 use App\Exceptions\NotFoundException;
+use App\Interfaces\IResultApi;
 use App\UseCases\GetDrawUseCase;
 use PHPUnit\Framework\TestCase;
 
@@ -12,24 +13,21 @@ class GetDrawUseCaseTest extends TestCase
     /** @var GetDrawUseCase */
     private $useCase;
 
-    /** @var DrawApiRepositoryInterface */
-    private $testApiRepositoryMock;
-
-    /** @var DrawApiRepositoryInterface */
-    private $testFallbackApiRepositoryMock;
-
+    /** @var IResultApi */
+    private $drawApiRepositoryMock;
+    
 
     protected function setup()
     {
-        $this->testApiRepositoryMock =  $this->prophesize(\App\Repository\DrawApiRepository::class);
+        $this->drawApiRepositoryMock =  $this->prophesize(\App\Repository\DrawApiRepository::class);
 
         $this->useCase = new GetDrawUseCase(
-            $this->testApiRepositoryMock->reveal());
+            $this->drawApiRepositoryMock->reveal());
     }
 
     public function testUseCaseReturnsValidResponseWhenApiWorks()
     {
-        $this->testApiRepositoryMock
+        $this->drawApiRepositoryMock
             ->fetch()
             ->shouldBeCalledTimes(1)
             ->willReturn($this->getDrawInstance());
@@ -42,7 +40,7 @@ class GetDrawUseCaseTest extends TestCase
     {
         $this->expectException(NotFoundException::class);
 
-        $this->testApiRepositoryMock
+        $this->drawApiRepositoryMock
             ->fetch()
             ->shouldBeCalledTimes(1)
             ->willReturn($this->getDrawInstance())

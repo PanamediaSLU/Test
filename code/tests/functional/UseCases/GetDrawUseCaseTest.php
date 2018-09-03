@@ -2,45 +2,86 @@
 
 namespace App\Tests\functional\UseCases;
 
+use App\Adapters\RedisCacheAdapter;
 use App\Entity\Draw;
+use App\Interfaces\ICache;
+use App\Interfaces\IResultApi;
 use App\UseCases\GetDrawUseCase;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class GetDrawUseCaseTest  extends KernelTestCase
+class GetDrawUseCaseTest extends KernelTestCase
 {
-    public function testUseCase()
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $entityManager;
+
+    /** @var GetDrawUseCase */
+    private $useCase;
+
+    /** @var IResultApi */
+    private $drawRepository;
+
+    /** @var ICache */
+    private $cacheAdapter;
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function setUp()
     {
-        self::bootKernel();
+        $kernel = self::bootKernel();
 
-        /** @var GetDrawUseCase $command */
-        $useCase = self::$kernel->getContainer()
-            ->get("App\UseCases\GetDrawUseCase");
-
-
-        /** @var EntityManagerInterface $em */
-        $em = self::$kernel->getContainer()
+        $this->entityManager = $kernel->getContainer()
             ->get('doctrine')
             ->getManager();
 
-        /** @var EntityRepository $repository */
-        $repository = $em->getRepository("App\Entity\Draw");
+        $this->useCase = $kernel->getContainer()->get(GetDrawUseCase::class);
+        $this->drawRepository = $this->entityManager->getRepository(Draw::class);
+        $this->cacheAdapter = $kernel->getContainer()->get(RedisCacheAdapter::class);
 
-        $qb =  $repository->createQueryBuilder("qb");
+        $this->resetDbAndCache();
+    }
+
+    public function testApiResultIsReturnedAndSavedToDbOnFirstCall()
+    {
+        $allItems = $this->drawRepository->findAll();
+        $draw = $this->useCase->execute();
+        $allItemsAfterUseCase = $this->drawRepository->findAll();
+        $this->assertInstanceOf(Draw::class, $draw);
+        $this->assertSame(count($allItems) + 1, count($allItemsAfterUseCase),
+            'Amount of security systems is not the same');
+    }
+
+    public function testApiResultIsReturnedOnSubsequentCalls()
+    {
+        $draw = $this->useCase->execute();
+        $this->assertInstanceOf(Draw::class, $draw);
+
+        $draw = $this->useCase->execute();
+        $this->assertInstanceOf(Draw::class, $draw);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        $this->entityManager->close();
+        $this->entityManager = null; // avoid memory leaks
+    }
+
+    private function resetDbAndCache()
+    {
+        $qb = $this->drawRepository->createQueryBuilder("qb");
 
         $qb->delete(Draw::class, 'io');
         $qb->where('io.id >= :id');
         $qb->setParameter(':id', 1);
         $qb->getQuery()->execute();
 
-
-        $allItems = $repository->findAll();
-
-        $useCase->execute();
-
-        $allItemsAfterUseCase = $repository ->findAll();
-
-        $this->assertSame(count($allItems)+1, count($allItemsAfterUseCase), 'Amount of security systems is not the same');
+        $this->cacheAdapter->flush();
     }
 }

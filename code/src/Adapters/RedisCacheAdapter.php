@@ -7,6 +7,7 @@ use Predis\Client;
 
 class RedisCacheAdapter implements ICache
 {
+    /** @var Client */
     private $redisClient;
 
     public function __construct($config)
@@ -19,18 +20,23 @@ class RedisCacheAdapter implements ICache
             ]
         );
 
-
         $this->redisClient->connect();
     }
 
-    public function put($key, $json): void
+    public function put($key, $json)
     {
-        $this->redisClient->set($key, $json);
+        $this->redisClient->set($key, serialize($json));
     }
 
-    public function get($key): string
+    public function get($key)
     {
-        $this->redisClient->get($key);
+        $value = unserialize($this->redisClient->get($key));
+
+        return (false !== $value) ? $value : "";
     }
 
+    public function flush()
+    {
+        $this->redisClient->flushall();
+    }
 }

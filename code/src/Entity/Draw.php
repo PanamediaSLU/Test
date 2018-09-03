@@ -145,7 +145,7 @@ class Draw
     }
 
     /**
-     * @return string
+     * @return \DateTime
      */
     public function getDrawDate(): \DateTime
     {

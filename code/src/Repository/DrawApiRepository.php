@@ -10,8 +10,13 @@ use App\Interfaces\IResultApi;
 
 class DrawApiRepository implements IResultApi
 {
+    /** @var IApiClient  */
     private $apiClientAdapter;
+
+    /** @var IResultApi  */
     private $drawFallbackApiRepository;
+
+    /** @var DrawDbRepositoryInterface  */
     private $drawDbRepository;
 
     public function __construct(
@@ -37,7 +42,7 @@ class DrawApiRepository implements IResultApi
                 'results.php',
                 ['query' => ['game' => 'euromillions']]
             );
-            
+
             if (isset($data['error']) || !is_array($data['results'])) {
                 throw new ApiErrorException("Api returned an error");
             }
