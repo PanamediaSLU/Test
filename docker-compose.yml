@@ -2,8 +2,8 @@ version: "3"
 
 services:
 
-  php7-mysql:
-    container_name: php7-database
+  mysql:
+    container_name: test-database
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:
@@ -14,9 +14,29 @@ services:
     volumes:
       - "./docker-entrypoint-initdb.d/draw.sql:/docker-entrypoint-initdb.d/draw.sql"
     restart: always
+    networks:
+      - local
 
-    # Redis perhaps?
+  redis:
+    container_name: test_redis
+    image: redis:alpine
+    ports:
+      - "7000:6379"
+    networks:
+      - local
+
+  front:
+    container_name: test_front
+    build:
+     context: .
+    ports:
+      - "9000:9000"
+    networks:
+      - local
+    volumes:
+      - ./code/:/var/www/
 
 networks:
   local:
     driver: bridge
+
