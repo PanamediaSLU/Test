@@ -17,8 +17,7 @@ Una prueba para unirse al equipo de desarrollo de Euromillions.com
 
 Necesitas tener docker, docker-compose y PHP7 instalado en tu entorno.
 
-Haz un clone del proyecto y lanza el fichero bootstrap.sh(entendemos que trabajas con Linux, Mac, BSD). Si tienes
-windows ponte en contacto con nosotros.
+Haz un clone del proyecto y lanza el fichero bootstrap.sh(entendemos que trabajas con Linux, Mac, BSD). 
 
 Que hace el fichero bootstrap.sh ?
 
