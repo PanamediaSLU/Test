@@ -11,8 +11,8 @@
 
 		$cache = $container->get(CacheService::class);
 
-		if ($cache->isCached()) {
-			$res = $cache->getResult();
+		if ($cache->isCached(date('Ymd'))) {
+			$res = $cache->getResult(date('Ymd'));
 
 			return format_result($res);
 		}
@@ -29,7 +29,7 @@
 	$res = $resultService->getFromDB($result->draw);
 
 	if (is_cache_enabled()) {
-		$cache->saveResult($res);
+		$cache->saveResult(str_replace("-", "", $result->draw), $res);
 	}
 
 	return format_result($res);

@@ -11,18 +11,18 @@ class CacheService
         $this->cacheRepo = $cacheRepo;
     }
 
-	public function isCached()
+	public function isCached($date)
 	{
-		return $this->cacheRepo->has('draw_date');
+		return $this->cacheRepo->has($date);
 	}
 
-	public function getResult()
+	public function getResult($date)
 	{
-		return $this->cacheRepo->get('draw_date');
+		return $this->cacheRepo->get($date);
 	}
 
-	public function saveResult($result)
+	public function saveResult($date, $result)
     {
-     	return $this->cacheRepo->put('draw_date', $result);
+     	return $this->cacheRepo->put($date, $result);
     }
 }
