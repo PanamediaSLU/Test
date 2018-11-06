@@ -2,3 +2,4 @@ vendor
 .idea
 .vagrant
 db
+config.ini

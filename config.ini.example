@@ -1,0 +1,14 @@
+[general]
+cache_enable=1
+
+[api]
+api_key=Qs538dw5akaBasBmLd
+api_url=http://www.magayo.com/api/results.php
+
+[database]
+driver=pdo_mysql
+host=localhost
+port=3306
+user=root
+password=
+database=euromillions
