@@ -1,11 +1,15 @@
 <?php
 namespace App\Interfaces;
-  
+
+use App\Entities\Result;
+
 interface IResultRepo
 {
-	public function create($data);
+	public function create(Result $result);
 
-    public function find($date);
+    public function find($value);
 
-    public function exists($date);
+    public function exists($value);
+
+    public function doesNotexists($value);
 }

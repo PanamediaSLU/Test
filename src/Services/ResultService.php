@@ -2,56 +2,72 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use App\DTO\ResultDTO;
 use App\Repositories\ResultApi;
 use App\Repositories\ResultRepository;
+use App\Repositories\FileCacheRepository;
 
 class ResultService
 {
-    public function __construct(ResultApi $resultApi, ResultRepository $resultRepo)
+    public function __construct(ResultApi $resultApi, ResultRepository $resultRepo, FileCacheRepository $cacheRepo)
     {
         $this->resultApi = $resultApi;
 
         $this->resultRepo = $resultRepo;
-    }
 
-	public function getFromApi()
-	{
-		return $this->resultApi->fetch();
-	}
-
-	public function getFromDB($date)
-	{
-		return $this->resultRepo->find($date);
-	}
-
-	public function saveResult($result)
-    {
-        $numbers = explode(',', $result->results);
-
-        $data = [];
-        $data['name'] = '';
-        $data['loteryId'] = '';
-        $data['drawDate'] = $result->draw;
-        $data['resultRegularNumberOne'] = $numbers[0];
-        $data['resultRegularNumberTwo'] = $numbers[1];
-        $data['resultRegularNumberThree'] = $numbers[2];
-        $data['resultRegularNumberFour'] = $numbers[3];
-        $data['resultRegularNumberFive'] = $numbers[4];
-        $data['resultLuckyNumberOne'] = $numbers[5];
-        $data['resultLuckyNumberTwo'] = $numbers[6];
-        $data['jackpotAmount'] = '';
-        $data['jackpotCurrencyName'] = '';
- 
-        return $this->resultRepo->create($data);
-    }
-
-    public function isInDB($date)
-    {
-    	return $this->resultRepo->exists($date);
+        $this->cacheRepo = $cacheRepo;
     }
 
     public function removeResult($date)
     {
         return $this->resultRepo->delete($date);
+    }
+
+    public function getLastDate($format = 'Y-m-d')
+    {
+        $friday = new Carbon('last friday');
+        $tuesday = new Carbon('last tuesday');
+
+        return $tuesday->greaterThan($friday) ? $tuesday->format($format) : $friday->format($format);
+    }
+
+    public function getResultFromCache()
+    {
+        $date = $this->getLastDate('Ymd');
+
+        if ($this->cacheRepo->has($date)) {
+            $resultJson = $this->cacheRepo->get($date);
+            $result = (new ResultDTO)->setResultFromJson($resultJson)->getResult();
+
+            return $result;
+        }
+
+        return $this->getResult();
+    }
+
+    public function getResult()
+    {
+        $res = $this->resultApi->fetch();
+
+        if ($res->getStatusCode() > 200 ) {
+            return $this->resultRepo->getLastResult();
+        }
+
+        $resultApi = $res->getBody()->getContents();
+
+        $resultDTO = new ResultDTO($resultApi);
+        $result    = $resultDTO->getResult();
+
+        if ($this->resultRepo->doesNotExists($result)) {
+            $this->resultRepo->create($result);
+        }
+
+        if (is_cache_enabled()) {
+            $this->cacheRepo->put($result->getDrawDate('Ymd'), $resultDTO->toJson());
+            // str_replace("-", "", $result->draw), 
+        }
+
+        return $result;
     }
 }

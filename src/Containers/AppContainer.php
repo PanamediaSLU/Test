@@ -2,7 +2,6 @@
 
 namespace App\Containers;
 
-use App\Services\CacheService;
 use App\Services\ResultService;
 use App\Repositories\ResultApi;
 use App\Repositories\ResultRepository;
@@ -25,19 +24,10 @@ class AppContainer
     public function makeContainer()
     {
         $this->container->setFactory(
-            CacheService::class,
-            function() {
-                return new CacheService(
-                    new FileCacheRepository()
-                );
-            }
-        );
-
-        $this->container->setFactory(
             ResultService::class,
             function() {
                 return new ResultService(
-                    new ResultApi(), new ResultRepository()
+                    new ResultApi(), new ResultRepository(), new FileCacheRepository()
                 );
             }
         );

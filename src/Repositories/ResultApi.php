@@ -28,7 +28,7 @@ class ResultApi implements IResultApi
 			]
 		]);
 
-    	return json_decode($res->getBody()->getContents());
+    	return $res;
     }
 
 

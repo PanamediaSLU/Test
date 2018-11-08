@@ -3,3 +3,4 @@ vendor
 .vagrant
 db
 config.ini
+cache/cache

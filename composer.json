@@ -13,7 +13,8 @@
         "guzzlehttp/guzzle": "^6.3@dev",
         "cache/filesystem-adapter": "^1.1@dev",
         "psr/container": "^1.0@dev",
-        "zendframework/zend-servicemanager": "^3.3@dev"
+        "zendframework/zend-servicemanager": "^3.3@dev",
+        "nesbot/carbon": "dev-master"
     },
     "autoload": {
         "psr-4": {
