@@ -1,17 +1,17 @@
 # Software developer test
 Una prueba para unirse al equipo de desarrollo de Euromillions.com
 
-## Que es la lotería Euromillions? 
+## Que es la lotería EuroJackpot? 
 
-***EuroMillions*** es la lotería transnacional más grande de Europa que cuenta con un bote mínimo de 17 millones de euros cada martes y viernes. 
-> El bote puede acumularse hasta llegar a un tope de 190 millones de euros, en caso de no haber ganadores.  
+***EuroJackpot*** es una lotería transnacional de Europa que cuenta con un bote mínimo de 10 millones de euros cada viernes. 
+> El bote puede acumularse hasta llegar a un tope de 90 millones de euros, en caso de no haber ganadores.  
 
-> Para completar un juego de EuroMillions se seleccionan cinco números principales del 1 al 50 y dos estrellas del 1 al 12.
+> Para completar un juego de EuroJackpot se seleccionan cinco números principales del 1 al 50 y dos números adicionales del 1 al 10.
 
 
-[Ejemplo de resultados](https://euromillions.com/es/euromillions/resultados)
+[Ejemplo de resultados](https://euromillions.com/es/eurojackpot/resultados)
 
-[Ejemplo para jugar](https://euromillions.com/es/euromillions/jugar) 
+[Ejemplo para jugar](https://euromillions.com/es/eurojackpot/jugar) 
 
 ## Como empezar
 
@@ -35,7 +35,7 @@ Si necesitas alguna aclaración o encuentras algún error, escribe una issue en 
 
 Como tenemos muchas integraciones con diferentes Apis, el test estará relacionado con estas.
 
-Queremos recuperar los resultados del último sorteo de Euromillions. Para esto necesitarás
+Queremos recuperar los resultados del último sorteo de EuroJackpot. Para esto necesitarás
 invocar a una API.
 
 ##### Por favor, cuando inicies la prueba, te pones en contacto con nosotros y te envíamos el endpoint y la api key necesaria para tener acceso. 
@@ -58,4 +58,4 @@ Puedes abrir una issue en este repositorio.
 
 ## Como enviar tu solución
 
-Haz un pull request al repositorio o nos la envías por email. 
+Haz un pull request al repositorio. 
